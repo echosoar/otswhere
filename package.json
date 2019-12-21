@@ -1,0 +1,30 @@
+{
+  "name": "otswhere",
+  "version": "0.0.1",
+  "description": "使阿里云表格存储 OTS 的条件过滤变得更简单",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/echosoar/otswhere.git"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/mocha test/**/*.test.js"
+  },
+  "keywords": [
+    "aliyun",
+    "ots",
+    "condition"
+  ],
+  "author": "echosoar",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/echosoar/otswhere/issues"
+  },
+  "homepage": "https://github.com/echosoar/otswhere#readme",
+  "dependencies": {
+    "tablestore": "^5.0.5"
+  },
+  "devDependencies": {
+    "mocha": "^6.2.2"
+  }
+}
