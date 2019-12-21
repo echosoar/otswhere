@@ -1,4 +1,4 @@
-const OTSWhere = require('../src');
+const OTSWhere = require('../index');
 const TableStore = require('tablestore');
 const assert = require('assert');
 describe('otswhere', () => {

@@ -1,11 +1,13 @@
-## OTSWhere
+# OTSWhere
 
-使阿里云表格存储 OTS 的条件过滤变得更简单
+使阿里云表格存储 OTS 的条件过滤与数据格式化变得更简单
 
-### Usage
+## Usage
 ```shell
 $ npm i otswhere
 ```
+
+### where 条件过滤
 ```js
 
 const OTSWhere = require('otswhere');
@@ -20,7 +22,7 @@ const params = {
 };
 ```
 
-### Operator
+#### Operator
 | operator | comment |
 | --- | --- |
 | = | TableStore.ComparatorType.EQUAL |
@@ -31,6 +33,62 @@ const params = {
 | <= | TableStore.ComparatorType.LESS_EQUAL |
 | & | TableStore.LogicalOperator.AND |
 | \| | TableStore.LogicalOperator.OR |
+
+### 数据格式化
+将表格存储 getRange 与 getRow 返回的数据进行格式化，分别变为列表与对象：
+```js
+const format = require('otswhere/format');
+
+// for getRow
+const row = format.row({
+    primaryKey: [
+        { name: 'name', value: 'test row'},
+        { name: 'id', value: 123456 }
+    ],
+    attributes: [
+        { columnName: 'age', columnValue: 24 },
+        { columnName: 'address', columnValue: 'HangZhou,China' },
+    ]
+});
+
+console.log(row);
+// {
+//   name: 'test row',
+//   id: 123456,
+//   age: 24,
+//   address: 'HangZhou,China'
+// }
+
+
+// for getRange
+const rows = format.rows({
+    rows: [
+        {
+            primaryKey: [ { name: 'name', value: '1' }],
+            attributes: [ { columnName: 'age', columnValue: 24 }]
+        },
+        {
+            primaryKey: [ { name: 'name', value: '2' }],
+            attributes: [ { columnName: 'age', columnValue: 23 }]
+        }
+    ],
+    next_start_primary_key: [
+        { name: 'name', value: 3 }
+    ]
+});
+
+console.log(rows);
+// {
+//   list: [
+//      { name: '1', age: 24' },
+//      { name: '2', age: 23 },
+//   ],
+//   next: {
+//      name: 3
+//   }
+// }
+```
+
 
 
 © MIT by echosoar 
