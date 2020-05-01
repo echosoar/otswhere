@@ -1,23 +1,24 @@
-const TableStore = require('tablestore');
 const matchPrefix = '#otswhere#';
 const prefixReg = new RegExp('^' + matchPrefix + '(\\d+)');
 const kuoReg = /\(([^\)]*)\)/ig;
 const andReg = /\s*&\s*/;
 const orReg = /\s*\|\s*/;
 const equalReg = /([!<>]?=|[<>])/;
-const equalMap = {
-  '=': TableStore.ComparatorType.EQUAL,
-  '!=': TableStore.ComparatorType.NOT_EQUAL,
-  '>': TableStore.ComparatorType.GREATER_THAN,
-  '>=': TableStore.ComparatorType.GREATER_EQUAL,
-  '<': TableStore.ComparatorType.LESS_THAN,
-  '<=': TableStore.ComparatorType.LESS_EQUAL
-};
 
 class OTSWhere {
-  constructor() {
+  constructor(options) {
+    options = options || {};
     this.matchMap = {};
     this.matchIndex = 0;
+    this.TableStore = options.TableStore || require('tablestore');
+    this.equalMap = {
+      '=': this.TableStore.ComparatorType.EQUAL,
+      '!=': this.TableStore.ComparatorType.NOT_EQUAL,
+      '>': this.TableStore.ComparatorType.GREATER_THAN,
+      '>=': this.TableStore.ComparatorType.GREATER_EQUAL,
+      '<': this.TableStore.ComparatorType.LESS_THAN,
+      '<=': this.TableStore.ComparatorType.LESS_EQUAL
+    };
   }
 
   formatItem(str) {
@@ -27,7 +28,7 @@ class OTSWhere {
     } else if (equalReg.test(str)){
       const ComparatorType = equalReg.exec(str)[1];
       const [key, value] = str.split(ComparatorType);
-      return new TableStore.SingleColumnCondition(this.trim(key), this.trim(value), equalMap[ComparatorType], false);
+      return new this.TableStore.SingleColumnCondition(this.trim(key), this.trim(value), this.equalMap[ComparatorType], false);
     }
   }
 
@@ -49,16 +50,16 @@ class OTSWhere {
     let logicalOperator = null;
     if (andReg.test(str)) {
       split = andReg;
-      logicalOperator = TableStore.LogicalOperator.AND;
+      logicalOperator = this.TableStore.LogicalOperator.AND;
     } else if (orReg.test(str)) {
       split = orReg;
-      logicalOperator = TableStore.LogicalOperator.OR;
+      logicalOperator = this.TableStore.LogicalOperator.OR;
     }
   
     if (split) {
       const splitStr = str.split(split);
       if (splitStr.length > 1) {
-        condition = new TableStore.CompositeCondition(logicalOperator);
+        condition = new this.TableStore.CompositeCondition(logicalOperator);
         splitStr.forEach(item => {
           condition.addSubCondition(this.formatItem(item));
         });
@@ -73,7 +74,7 @@ class OTSWhere {
   }
 }
 
-module.exports = where => {
-  const f = new OTSWhere();
+module.exports = (where, options) => {
+  const f = new OTSWhere(options);
   return f.format(where);
 };

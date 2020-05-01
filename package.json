@@ -1,6 +1,6 @@
 {
   "name": "otswhere",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "使阿里云表格存储 OTS 的条件过滤与数据格式化变得更简单",
   "main": "index.js",
   "repository": {
